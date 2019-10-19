@@ -13,6 +13,8 @@ def parse_arguments():
     parser.add_argument('transaction',
                         help='The transaction ID (hex) to verify the signatures.')
 
+    parser.add_argument('--block-height', help='Block height where the related transaction belongs')
+
     # includes a custom rpc node argument.
     parser.add_argument('--node',
                         required=False,
@@ -41,7 +43,8 @@ def entry():
 
     # find the transaction data by the transaction id.
     print("=> Retrieving transaction...")
-    transaction_data = verifier.find_transaction(transaction_id)
+    transaction_data = verifier.find_transaction(
+        transaction_id, block_height=arguments.block_height)
 
     # extract the public keys from the transaction.
     print("\n=> Extracting public keys...")

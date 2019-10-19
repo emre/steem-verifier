@@ -26,16 +26,26 @@ class Verifier:
         self.key_prefix = key_prefix
 
     # Verifier().find_transaction
-    def find_transaction(self, transaction_id):
+    def find_transaction(self, transaction_id, block_height=None):
         """
         Transaction finder method
 
         :param transaction_id: Transaction ID to find.
+        :param block_height: Block height where the transaction belongs to.
         :return: Transaction data (when found).
         """
         # find the transaction data from the api client.
-        transaction_data = self.client.get_transaction(transaction_id)
-        # transaction = SignedTransaction(transaction_data)
+        transaction_data = None
+        if not block_height:
+            transaction_data = self.client.get_transaction(transaction_id)
+        else:
+            block_data = self.client.get_block(block_height)
+            for tx in block_data.get("transactions", []):
+                if tx["transaction_id"] == transaction_id:
+                    transaction_data = tx
+                    break
+        if not transaction_data:
+            raise ValueError("Can't locate transaction")
         return transaction_data
 
     # Verifier().get_public_keys
